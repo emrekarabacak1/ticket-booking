@@ -37,6 +37,10 @@ public class TicketService {
         User user = userRepository.findByEmail(email).orElseThrow(()-> new IllegalArgumentException("Kullanıcı bulunamadı"));
         Seat seat = seatRepository.findById(ticketRequestDto.getSeatId()).orElseThrow(()->new IllegalArgumentException("Koltuk bulunamadı"));
 
+        if(seat.getEvent().getDate().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Etkinlik süresi dolmuştur");
+        }
+
         if(seat.getStatus() != SeatStatus.AVAILABLE){
             throw new IllegalStateException("Koltuk satılmıştır!");
         }
