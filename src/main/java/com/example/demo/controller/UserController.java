@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.UserRequestDto;
 import com.example.demo.entity.User;
+import com.example.demo.security.RoleConstants;
 import com.example.demo.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class UserController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('" + RoleConstants.ADMIN + "')")
     public ResponseEntity<User> createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userRequestDto));
     }

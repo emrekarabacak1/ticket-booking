@@ -5,6 +5,7 @@ import com.example.demo.dto.EventResponseDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Event;
 import com.example.demo.entity.Seat;
+import com.example.demo.security.RoleConstants;
 import com.example.demo.service.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class EventController{
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('" + RoleConstants.ADMIN + "')")
     public ResponseEntity<EventResponseDto> addEvent(@Valid @RequestBody EventRequestDto eventRequestDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(eventService.createEvent(eventRequestDto));
     }
