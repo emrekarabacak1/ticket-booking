@@ -12,8 +12,9 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    @Query("SELECT e FROM Event e LEFT JOIN FETCH e.category WHERE e.category.id = :categoryId")
-    List<Event> findByCategoryId(Long categoryId);
+    @Query(value = "SELECT e FROM Event e LEFT JOIN FETCH e.category WHERE e.category.id = :categoryId",
+            countQuery = "select COUNT(e) from Event e where e.category.id = :categoryId")
+    Page<Event> findByCategoryId(Long categoryId, Pageable pageable);
 
     @Query("SELECT e FROM Event e LEFT JOIN FETCH e.category WHERE e.date > :date")
     List<Event> findByDateAfter(LocalDateTime date);

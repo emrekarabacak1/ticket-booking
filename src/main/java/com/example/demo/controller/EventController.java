@@ -41,8 +41,8 @@ public class EventController{
     }
 
     @GetMapping("/category/{id}")
-    public ResponseEntity<List<EventResponseDto>> getEventsByCategory(@PathVariable Long id){
-        return ResponseEntity.ok(eventService.getEventsByCategory(id));
+    public ResponseEntity<Page<EventResponseDto>> getEventsByCategory(@PathVariable Long id, @PageableDefault(page = 0, size = 10, sort = "date") Pageable pageable){
+        return ResponseEntity.ok(eventService.getEventsByCategory(id,pageable));
     }
 
     @GetMapping("/upcoming")

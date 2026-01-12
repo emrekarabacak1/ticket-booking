@@ -85,8 +85,10 @@ public class EventService {
         return eventPage.map(this::mapToDto);
     }
 
-    public List<EventResponseDto> getEventsByCategory(Long categoryId){
-        return eventRepository.findByCategoryId(categoryId).stream().map(this::mapToDto).collect(Collectors.toList());
+    public Page<EventResponseDto> getEventsByCategory(Long categoryId, Pageable pageable){
+        Page<Event> eventPage = eventRepository.findByCategoryId(categoryId, pageable);
+
+        return eventPage.map(this::mapToDto);
     }
 
     public List<EventResponseDto> getUpComingEvents(LocalDateTime date){
