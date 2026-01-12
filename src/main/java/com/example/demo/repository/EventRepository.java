@@ -2,6 +2,8 @@ package com.example.demo.repository;
 
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Event;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -17,6 +19,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByDateAfter(LocalDateTime date);
 
     @Override
-    @Query("select e from Event e left join fetch e.category")
-    List<Event> findAll();
+    @Query(value = "select e from Event e left join fetch e.category",
+            countQuery = "select COUNT(e) FROM Event e")
+    Page<Event> findAll(Pageable pageable);
 }

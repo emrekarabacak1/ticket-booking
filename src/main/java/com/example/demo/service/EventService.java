@@ -9,6 +9,8 @@ import com.example.demo.entity.SeatStatus;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.EventRepository;
 import com.example.demo.repository.SeatRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,8 +79,10 @@ public class EventService {
         return seats;
     }
 
-    public List<EventResponseDto> getAllEvents(){
-        return eventRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
+    public Page<EventResponseDto> getAllEvents(Pageable pageable){
+        Page<Event> eventPage = eventRepository.findAll(pageable);
+
+        return eventPage.map(this::mapToDto);
     }
 
     public List<EventResponseDto> getEventsByCategory(Long categoryId){

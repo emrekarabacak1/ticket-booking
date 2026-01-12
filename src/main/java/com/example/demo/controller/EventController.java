@@ -8,6 +8,9 @@ import com.example.demo.entity.Seat;
 import com.example.demo.security.RoleConstants;
 import com.example.demo.service.EventService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,8 +36,8 @@ public class EventController{
     }
 
     @GetMapping
-    public ResponseEntity<List<EventResponseDto>> getAllEvents(){
-        return ResponseEntity.ok(eventService.getAllEvents());
+    public ResponseEntity<Page<EventResponseDto>> getAllEvents(@PageableDefault(page = 0, size = 10, sort = "date") Pageable pageable){
+        return ResponseEntity.ok(eventService.getAllEvents(pageable));
     }
 
     @GetMapping("/category/{id}")
