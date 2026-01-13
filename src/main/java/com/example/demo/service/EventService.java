@@ -9,6 +9,7 @@ import com.example.demo.entity.SeatStatus;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.EventRepository;
 import com.example.demo.repository.SeatRepository;
+import com.example.demo.service.strategy.SeatGenerationStrategy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,13 @@ public class EventService {
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
     private final SeatRepository seatRepository;
+    private final SeatGenerationStrategy seatGenerationStrategy;
 
-    public EventService(EventRepository eventRepository, CategoryRepository categoryRepository, SeatRepository seatRepository) {
+    public EventService(EventRepository eventRepository, CategoryRepository categoryRepository, SeatRepository seatRepository, SeatGenerationStrategy seatGenerationStrategy) {
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.seatRepository = seatRepository;
+        this.seatGenerationStrategy = seatGenerationStrategy;
     }
 
     @Transactional
@@ -44,39 +47,13 @@ public class EventService {
         event.setDate(eventRequestDto.getDate());
         event.setCategory(category);
 
-        //Koltukları otomatik oluştur
-        //Yardımcı metodu çağır, bize 100 tane koltuk listesi dönüyor.
-        List<Seat> seats = generateSeats(event, eventRequestDto.getNumberOfRows(), eventRequestDto.getSeatsPerRow());
+        List<Seat> seats = seatGenerationStrategy.generate(event, eventRequestDto.getNumberOfRows(), eventRequestDto.getSeatsPerRow());
 
         event.setSeats(seats);
 
         Event savedEvent = eventRepository.save(event);
 
         return mapToDto(savedEvent);
-    }
-
-    //Helper Method (yardımcı metot)
-    // Koltuk listesi üretir, vt'na yazmaz.
-    private List<Seat> generateSeats(Event event, int row, int seatsPerRow){
-        List<Seat> seats = new ArrayList<>();
-
-        for(int i = 0; i < row; i++){
-            char rowChar = (char) ('A' + i);
-
-            //O sıradaki koltukları gezer.
-            for(int j = 1; j <= seatsPerRow; j++){
-                Seat seat = new Seat();
-                seat.setRow(String.valueOf(rowChar));
-                seat.setNumber((long) j);
-                seat.setPrice(event.getPrice());
-                seat.setStatus(SeatStatus.AVAILABLE);
-
-                seat.setEvent(event);
-
-                seats.add(seat);
-            }
-        }
-        return seats;
     }
 
     public Page<EventResponseDto> getAllEvents(Pageable pageable){
