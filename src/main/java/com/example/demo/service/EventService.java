@@ -72,6 +72,13 @@ public class EventService {
         return eventRepository.findByDateAfter(LocalDateTime.now()).stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
+    public void deleteEvent(Long id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Etkinlik bulunamadı id: " + id));
+
+        eventRepository.delete(event);
+    }
+
     public List<Seat> getAvailableSeats(Long eventId){
         return seatRepository.findByEventIdAndStatus(eventId,SeatStatus.AVAILABLE);
     }

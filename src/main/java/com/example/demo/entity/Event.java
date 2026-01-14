@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,7 +15,9 @@ import java.util.List;
 @Table(name = "events")
 @Getter
 @Setter
-public class Event {
+@SQLDelete(sql = "UPDATE events SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
+public class Event extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

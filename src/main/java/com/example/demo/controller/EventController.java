@@ -40,6 +40,13 @@ public class EventController{
         return ResponseEntity.ok(eventService.getAllEvents(pageable));
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('" + RoleConstants.ADMIN + "')")
+    public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
+        eventService.deleteEvent(id);
+        return ResponseEntity.ok("Etkinlik başarıyla silindi.");
+    }
+
     @GetMapping("/category/{id}")
     public ResponseEntity<Page<EventResponseDto>> getEventsByCategory(@PathVariable Long id, @PageableDefault(page = 0, size = 10, sort = "date") Pageable pageable){
         return ResponseEntity.ok(eventService.getEventsByCategory(id,pageable));
