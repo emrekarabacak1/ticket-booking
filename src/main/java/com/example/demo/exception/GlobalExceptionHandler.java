@@ -1,6 +1,7 @@
 package com.example.demo.exception;
 
 import com.example.demo.dto.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError; // Import
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -45,8 +47,7 @@ public class GlobalExceptionHandler {
     // 3. Genel Beklenmeyen Hatalar (Zırhın son katmanı)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception e) {
-        // Loglama yapılmalı (System.out veya Slf4j)
-        System.err.println("BEKLENMEYEN HATA: " + e.getMessage());
+        log.error("BEKLENMEYEN HATA: ", e);
 
         ErrorResponse error = new ErrorResponse(
                 "Sunucuda beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.",
