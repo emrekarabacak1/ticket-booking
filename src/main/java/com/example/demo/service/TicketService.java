@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.TicketRequestDto;
 import com.example.demo.dto.TicketResponseDto;
 import com.example.demo.entity.*;
+import com.example.demo.mapper.TicketMapper;
 import com.example.demo.repository.SeatRepository;
 import com.example.demo.repository.TicketRepository;
 import com.example.demo.repository.UserRepository;
@@ -23,11 +24,13 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final SeatRepository seatRepository;
     private final UserRepository userRepository;
+    private final TicketMapper  ticketMapper;
 
-    public TicketService(TicketRepository ticketRepository, UserRepository userRepository, SeatRepository seatRepository) {
+    public TicketService(TicketRepository ticketRepository, UserRepository userRepository, SeatRepository seatRepository, TicketMapper ticketMapper) {
         this.ticketRepository = ticketRepository;
         this.seatRepository = seatRepository;
         this.userRepository = userRepository;
+        this.ticketMapper = ticketMapper;
     }
 
     @Transactional
@@ -62,7 +65,7 @@ public class TicketService {
 
         Ticket savedTicket = ticketRepository.save(ticket);
 
-        return mapToDto(savedTicket);
+        return ticketMapper.toResponseDto(savedTicket);
     }
 
     public List<TicketResponseDto> getMyTickets(){
@@ -71,17 +74,7 @@ public class TicketService {
 
         List<Ticket> tickets = ticketRepository.findByUserId(user.getId());
 
-        return tickets.stream().map(this::mapToDto).collect(Collectors.toList());
+        return tickets.stream().map(ticketMapper::toResponseDto).collect(Collectors.toList());
     }
 
-    private TicketResponseDto mapToDto(Ticket ticket){
-        return TicketResponseDto.builder().
-                id(ticket.getId())
-                .eventName(ticket.getEvent().getName())
-                .seatRow(ticket.getSeat().getRow())
-                .seatNumber(ticket.getSeat().getNumber())
-                .price(ticket.getPrice())
-                .purchaseDate(ticket.getPurchaseDate())
-                .build();
-    }
 }

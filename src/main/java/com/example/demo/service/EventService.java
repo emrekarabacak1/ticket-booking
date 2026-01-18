@@ -6,6 +6,7 @@ import com.example.demo.entity.Category;
 import com.example.demo.entity.Event;
 import com.example.demo.entity.Seat;
 import com.example.demo.entity.SeatStatus;
+import com.example.demo.mapper.EventMapper;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.EventRepository;
 import com.example.demo.repository.SeatRepository;
@@ -27,12 +28,14 @@ public class EventService {
     private final CategoryRepository categoryRepository;
     private final SeatRepository seatRepository;
     private final SeatGenerationStrategy seatGenerationStrategy;
+    private final EventMapper eventMapper;
 
-    public EventService(EventRepository eventRepository, CategoryRepository categoryRepository, SeatRepository seatRepository, SeatGenerationStrategy seatGenerationStrategy) {
+    public EventService(EventRepository eventRepository, CategoryRepository categoryRepository, SeatRepository seatRepository, SeatGenerationStrategy seatGenerationStrategy, EventMapper eventMapper) {
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.seatRepository = seatRepository;
         this.seatGenerationStrategy = seatGenerationStrategy;
+        this.eventMapper = eventMapper;
     }
 
     @Transactional
@@ -53,23 +56,23 @@ public class EventService {
 
         Event savedEvent = eventRepository.save(event);
 
-        return mapToDto(savedEvent);
+        return eventMapper.toResponseDto(savedEvent);
     }
 
     public Page<EventResponseDto> getAllEvents(Pageable pageable){
         Page<Event> eventPage = eventRepository.findAll(pageable);
 
-        return eventPage.map(this::mapToDto);
+        return eventPage.map(eventMapper::toResponseDto);
     }
 
     public Page<EventResponseDto> getEventsByCategory(Long categoryId, Pageable pageable){
         Page<Event> eventPage = eventRepository.findByCategoryId(categoryId, pageable);
 
-        return eventPage.map(this::mapToDto);
+        return eventPage.map(eventMapper::toResponseDto);
     }
 
     public List<EventResponseDto> getUpComingEvents(LocalDateTime date){
-        return eventRepository.findByDateAfter(LocalDateTime.now()).stream().map(this::mapToDto).collect(Collectors.toList());
+        return eventRepository.findByDateAfter(LocalDateTime.now()).stream().map(eventMapper::toResponseDto).collect(Collectors.toList());
     }
 
     public void deleteEvent(Long id) {
@@ -81,18 +84,6 @@ public class EventService {
 
     public List<Seat> getAvailableSeats(Long eventId){
         return seatRepository.findByEventIdAndStatus(eventId,SeatStatus.AVAILABLE);
-    }
-
-    private EventResponseDto mapToDto(Event event){
-        return EventResponseDto.builder()
-                .id(event.getId())
-                .name(event.getName())
-                .description(event.getDescription())
-                .date(event.getDate())
-                .location(event.getLocation())
-                .price(event.getPrice())
-                .categoryName(event.getCategory().getName())
-                .build();
     }
 
 }
