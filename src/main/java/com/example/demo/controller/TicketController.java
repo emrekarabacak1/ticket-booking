@@ -31,4 +31,10 @@ public class TicketController {
     public ResponseEntity<List<TicketResponseDto>> getMyTickets(){
         return ResponseEntity.ok(ticketService.getMyTickets());
     }
+
+    @PostMapping("/reserve")
+    public ResponseEntity<String> reserveSeat(@RequestParam Long seatId) {
+        ticketService.reserveSeat(seatId);
+        return ResponseEntity.ok("Koltuk başarıyla rezerve edildi! 10 dakika süreniz başladı.");
+    }
 }

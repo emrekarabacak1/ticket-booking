@@ -13,18 +13,28 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-  app:
-    image: ticket-booking-app
-    container_name: ticket-app-container
+  redis:
+    image: redis:alpine
+    container_name: flashticket-redis
     ports:
-      - "8080:8080"
-    depends_on:
-      - postgres-db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/flashticket_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      - "6379:6379"
+    restart: always
+
+  ##app:
+    ##image: ticket-booking-app
+    ##container_name: ticket-app-container
+    ##ports:
+    ##  - "8080:8080"
+    ##depends_on:
+    ##  - postgres-db
+    ##  - redis
+    ##environment:
+    ##  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/flashticket_db
+    ##  SPRING_DATASOURCE_USERNAME: postgres
+    ##  SPRING_DATASOURCE_PASSWORD: password
+    ##  SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ##  SPRING_DATA_REDIS_HOST: redis
+    ##  SPRING_DATA_REDIS_PORT: 6379
 
 volumes:
   postgres-data:
