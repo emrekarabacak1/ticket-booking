@@ -1,7 +1,24 @@
 version: '3.8'
 
 services:
-  # 1. VERİTABANI
+  # 1. JAVA UYGULAMASI
+  app:
+    container_name: ticket-app
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db
+      - redis
+      - rabbitmq
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/flashticket_db
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+      JWT_SECRET_KEY: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+
+  # 2. VERİTABANI
   postgres-db:
     image: postgres:15
     container_name: postgres-container
@@ -14,15 +31,14 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-  # 2. REDIS
+  # 3. REDIS
   redis:
     image: redis:alpine
     container_name: flashticket-redis
     ports:
       - "6379:6379"
-    restart: always
 
-  # 3. RABBITMQ
+  # 4. RABBITMQ
   rabbitmq:
     image: rabbitmq:3-management
     container_name: flashticket-rabbitmq
@@ -32,7 +48,6 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
-    restart: always
 
 volumes:
   postgres-data:
